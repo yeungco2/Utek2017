@@ -1,0 +1,146 @@
+global maxDistance 
+maxDistance = 480 #480 km
+global rechargeTime
+rechargeTime = 0.3333333  #20 min = 0.3hours
+global speed
+speed = 80  #80km/hour
+
+
+import json
+import urllib
+
+#helper function to turn input string into floats
+def parseInputString(inputString):
+    parsed = inputString.split()
+    parsed = list(map(float,parsed))
+    return parsed;
+
+#parseFuelStation returns a list of dictionaries with the following keys
+#in each dictionary: latitude, longitude, city, id
+def parseFuelStation():
+    url = 'https://gist.githubusercontent.com/c2huc2hu/'+\
+    '4164f3893e2c46c978a3159d307905ba/raw/'+\
+    'a1eec746ee4c4c0bc1d3dc66fc4c6c07c3b81b7a/charging_stations.json'
+    response = urllib.request.urlopen(url)
+    data = json.loads(response.read().decode('utf-8'))
+    
+    parsedData = []
+    for entry in data['fuel_stations']:
+        parsedData.append({'latitude':entry['latitude'],\
+                          'longitude':entry['longitude'],\
+                          'city':entry['city'],\
+                          'id':entry['id']})
+                          
+    return parsedData
+    
+#parseGoogleAPI takes a input string a pair of longitudes and latitudes
+#and formats a list of dictionaries with the following keys
+#in each dictionary: distance(kilometers), duration(hours)
+def parseGoogleAPI(inputString):
+    coords = parseInputString(inputString)    
+    
+    #define key and base url
+    api_key = 'AIzaSyAw6MXv804JDMInwU9YD1jZgVyOTaq4So8'
+    base_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
+    parameter = 'origins='+str(coords[0])+','+str(coords[1])+\
+    '&destinations='+str(coords[2])+','+str(coords[3])+'&key='
+    
+    url = base_url + parameter + api_key 
+    
+    response = urllib.request.urlopen(url)
+    data = json.loads(response.read().decode('utf-8'))
+    data = data['rows'][0]['elements'][0]
+    
+    parsedData = []
+    parsedData.append({'distance': (float("{0:.3f}".\
+                        format(data['distance']['value']/1000.0))),\
+                        'duration': (float("{0:.2f}".\
+                        format(data['duration']['value']/3600.0)))})
+    
+    return parsedData
+    
+    
+#nodes of gasStation, with latitude and longitude, name, code
+class gasStation(object):
+    def _init_(self, lat, longi, name, code):
+        self.lat = lat
+        self.longi = longi
+        self.name = name
+        self.code = code
+        self.g1 = ''
+        self.g2 = ''
+        self.g3 = ''
+        self.edges = {}
+
+    #given radius of 480km, determine all edges (Elena) return 
+    #def determineEdges(self):
+        #allEdges = []
+        #for 
+    
+    def lat(self):
+        return self.lat
+        
+    def longi(self):
+        return self.longi
+        
+    def name(self):
+        return self.name
+        
+    def g1(self):
+        return self.g1
+
+    def g2(self):
+        return self.g2
+
+    def g3(self):
+        return self.g3
+    
+    def set3closest(self, name1, name2 , name3):
+        self.g1 = name1
+        self.g2 = name2
+        self.g3 = name3
+        
+        
+class RouteGraph:
+    def _init_(self, origin, destination):
+        # nodes
+        self.nodes = {}
+        self.origin = origin
+        self.destination = destination
+    
+    #return all nodes
+    def stations(self):
+        "return all nodes (gas stations) of the graph"
+        return self.nodes.keys()
+        
+    #given list of strings
+    def set3closest(self, list3closest):
+        name1 = list3closest[0]
+        name2 = list3closest[1]
+        name3 = list3closest[2]
+        set3closest(name1, name2 , name3)               
+ 
+    
+    #insert Station into graph by passing a str(name)
+    def insertStation(self, name):
+        #create a gasStation object into adj list
+        self.nodes[name] = gasStation(latitude, longitude, name, code)
+        
+
+def main():
+    #maxDistance = 480 #480 km
+    #rechargeTime = 0.3333333  #20 min = 0.3hours
+    #speed = 80  #80km/hour
+    parseFuelStation()
+    
+    
+    
+    totalDist = 0.0
+    totalTime = 0.0
+    
+    currentDist = 0.0
+    
+    
+    routeGraph(origin, destination)
+    
+    
