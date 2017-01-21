@@ -7,20 +7,19 @@ Created on Sat Jan 21 13:32:00 2017
 
 import parseJSON
 
-url = 'https://gist.githubusercontent.com/c2huc2hu/4164f3893e2c46c978a3159d307905ba/raw/a1eec746ee4c4c0bc1d3dc66fc4c6c07c3b81b7a/charging_stations.json'
-
 def parseInput(inputString):
-    parsed = inputString.split();
+    parsed = inputString.split()
+    parsed = list(map(float,parsed))
     return parsed;
 
 def findDistance(inputString):
-    lats,lngs,latd,lngd = parseInput(inputString)    
+    coords = parseInput(inputString)    
     
     #define key and base url
     api_key = 'AIzaSyAw6MXv804JDMInwU9YD1jZgVyOTaq4So8'
     base_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
-    parameter = 'origins='+str(lats)+','+str(lngs)+\
-    '&destinations='+str(latd)+','+str(lngd)+'&key='
+    parameter = 'origins='+str(coords[0])+','+str(coords[1])+\
+    '&destinations='+str(coords[2])+','+str(coords[3])+'&key='
     
     url = base_url + parameter + api_key 
     
