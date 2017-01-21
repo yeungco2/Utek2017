@@ -11,7 +11,6 @@ import urllib
 #helper function to turn input string into floats
 def parseInputString(inputString):
     parsed = inputString.split()
-    parsed = list(map(float,parsed))
     return parsed;
 
 #parseFuelStation returns a list of dictionaries with the following keys
@@ -35,14 +34,11 @@ def parseFuelStation():
 #parseGoogleAPI takes a input string a pair of longitudes and latitudes
 #and formats a list of dictionaries with the following keys
 #in each dictionary: distance(kilometers), duration(hours)
-def parseGoogleAPI(inputString):
-    coords = parseInputString(inputString)    
-    
-    #define key and base url
+def parseGoogleAPI(lats,lngs,latd,lngd):  
     api_key = 'AIzaSyAw6MXv804JDMInwU9YD1jZgVyOTaq4So8'
     base_url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
-    parameter = 'origins='+str(coords[0])+','+str(coords[1])+\
-    '&destinations='+str(coords[2])+','+str(coords[3])+'&key='
+    parameter = 'origins='+lats+','+lngs+\
+    '&destinations='+latd+','+lngd+'&key='
     
     url = base_url + parameter + api_key 
     
@@ -50,10 +46,8 @@ def parseGoogleAPI(inputString):
     data = json.loads(response.read().decode('utf-8'))
     data = data['rows'][0]['elements'][0]
     
-    parsedData = []
-    parsedData.append({'distance': (float("{0:.3f}".\
-                        format(data['distance']['value']/1000.0))),\
-                        'duration': (float("{0:.2f}".\
-                        format(data['duration']['value']/3600.0)))})
+    parsedData = {}
+    parsedData['distance'] = float("{0:.3f}".format(data['distance']['value']/1000.0))
+    parsedData['duration'] = float("{0:.2f}".format(data['duration']['value']/3600.0))
     
     return parsedData
